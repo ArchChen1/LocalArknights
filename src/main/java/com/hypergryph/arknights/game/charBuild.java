@@ -81,7 +81,7 @@ public class charBuild {
                     inventory.put(itemid, UserSyncData.getJSONObject("inventory").getIntValue(itemid));
                 }
 
-                rarity = ArknightsApplication.characterJson.getJSONObject(charid).getIntValue("rarity");
+                rarity = ArknightsApplication.getCharacterRarity(charid);
                 itemid = "[0,100,117,134,151,168,185,202,219,236,253,270,287,304,321,338,355,372,389,406,423,440,457,474,491,508,525,542,559,574,589,605,621,637,653,669,685,701,716,724,739,749,759,770,783,804,820,836,852,888,-1]";
                 String e_0_cost = "[0,30,36,43,50,57,65,73,81,90,99,108,118,128,138,149,160,182,206,231,258,286,315,346,378,411,446,482,520,557,595,635,677,720,764,809,856,904,952,992,1042,1086,1131,1178,1229,1294,1353,1413,1474,1572,-1]";
                 String evolve_1 = "[0,120,172,224,276,328,380,432,484,536,588,640,692,744,796,848,900,952,1004,1056,1108,1160,1212,1264,1316,1368,1420,1472,1524,1576,1628,1706,1784,1862,1940,2018,2096,2174,2252,2330,2408,2584,2760,2936,3112,3288,3464,3640,3816,3992,4168,4344,4520,4696,4890,5326,6019,6312,6505,6838,7391,7657,7823,8089,8355,8621,8887,9153,9419,9605,9951,10448,10945,11442,11939,12436,12933,13430,13927,14549,-1]";
@@ -576,8 +576,11 @@ public class charBuild {
             value = {"/evolveChar"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject EvolveChar(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject EvolveChar(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/evolveChar");
         int charInstId = JsonBody.getIntValue("charInstId");
         int destEvolvePhase = JsonBody.getIntValue("destEvolvePhase");
@@ -602,7 +605,7 @@ public class charBuild {
                 JSONObject chars = UserSyncData.getJSONObject("troop").getJSONObject("chars").getJSONObject(String.valueOf(charInstId));
                 JSONObject inventory = new JSONObject(true);
                 String charid = chars.getString("charId");
-                int rarity = ArknightsApplication.characterJson.getJSONObject(String.valueOf(charid)).getIntValue("rarity");
+                int rarity = ArknightsApplication.getCharacterRarity(String.valueOf(charid));
                 JSONArray phases = ArknightsApplication.characterJson.getJSONObject(String.valueOf(charid)).getJSONArray("phases");
                 JSONArray skills = ArknightsApplication.characterJson.getJSONObject(String.valueOf(charid)).getJSONArray("skills");
 
@@ -689,8 +692,11 @@ public class charBuild {
             value = {"/changeCharSkin"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject ChangeCharSkin(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject ChangeCharSkin(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/changeCharSkin");
         int charInstId = JsonBody.getIntValue("charInstId");
         String skinId = JsonBody.getString("skinId");
@@ -734,8 +740,11 @@ public class charBuild {
             value = {"/setCharVoiceLan"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject setCharVoiceLan(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject setCharVoiceLan(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/setCharVoiceLan");
         JSONArray charList = JsonBody.getJSONArray("charList");
         String voiceLan = JsonBody.getString("voiceLan");
@@ -781,8 +790,11 @@ public class charBuild {
             value = {"/batchSetCharVoiceLan"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject batchSetCharVoiceLan(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject batchSetCharVoiceLan(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/batchSetCharVoiceLan");
         String voiceLan = JsonBody.getString("voiceLan");
         List<Account> Accounts = userDao.queryAccountBySecret(secret);
@@ -840,8 +852,11 @@ public class charBuild {
             value = {"/unlockEquipment"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject unlockEquipment(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject unlockEquipment(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/unlockEquipment");
         int charInstId = JsonBody.getIntValue("charInstId");
         String templateId = JsonBody.getString("templateId");
@@ -886,8 +901,11 @@ public class charBuild {
             value = {"/setEquipment"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject setEquipment(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject setEquipment(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/setEquipment");
         int charInstId = JsonBody.getIntValue("charInstId");
         String templateId = JsonBody.getString("templateId");
@@ -932,8 +950,11 @@ public class charBuild {
             value = {"/addonStory/unlock"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject addonStoryUnlock(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject addonStoryUnlock(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/addonStory/unlock");
         String charId = JsonBody.getString("charId");
         String storyId = JsonBody.getString("storyId");
@@ -999,8 +1020,11 @@ public class charBuild {
             value = {"/addonStage/battleStart"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject addonStageBattleStart(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject addonStageBattleStart(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/addonStage/battleStart");
         String charId = JsonBody.getString("charId");
         String stageId = JsonBody.getString("stageId");
@@ -1078,8 +1102,11 @@ public class charBuild {
             value = {"/addonStage/battleFinish"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject addonStageBattleFinish(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject addonStageBattleFinish(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/addonStage/battleFinish");
         List<Account> Accounts = userDao.queryAccountBySecret(secret);
         if (Accounts.size() != 1) {
@@ -1180,8 +1207,11 @@ public class charBuild {
             value = {"/changeCharTemplate"},
             produces = {"application/json;charset=UTF-8"}
     )
-    public JSONObject changeCharTemplate(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject changeCharTemplate(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /charBuild/changeCharTemplate");
         int charInstId = JsonBody.getIntValue("charInstId");
         String templateId = JsonBody.getString("templateId");

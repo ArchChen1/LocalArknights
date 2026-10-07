@@ -115,9 +115,11 @@ public class u8 {
         agreementUrl.put("service", "http://127.0.0.1:31416/protocol/plain/ak/service");
         agreementUrl.put("updateOverview", "http://127.0.0.1:31416/protocol/plain/ak/overview_of_changes");
         data.put("agreementUrl", agreementUrl);
-        data.put("authorized", "true");
-        data.put("isLatestUserAgreement", "true");
+        data.put("authorized", true);
+        data.put("isLatestUserAgreement", true);
         result.put("data", data);
+
+        ArknightsApplication.LOGGER.info("用户协议响应: " + result.toJSONString());
         result.put("msg", "OK");
         result.put("status", 0);
         result.put("type", "");
@@ -132,7 +134,7 @@ public class u8 {
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] 确认用户协议变更 /u8/user/auth/v1/update_agreement");
         JSONObject result = new JSONObject();
         result.put("msg", "OK");
-        result.put("status", "0");
+        result.put("status", 0);
         result.put("type", "");
         return result;
         }

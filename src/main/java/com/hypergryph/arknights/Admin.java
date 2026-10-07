@@ -158,7 +158,7 @@ public class Admin {
                 get_char.put("isNew", 0);
                 char_data = UserSyncData.getJSONObject("troop").getJSONObject("chars").getJSONObject(String.valueOf(repeatCharId));
                 int potentialRank = char_data.getIntValue("potentialRank");
-                int rarity = ArknightsApplication.characterJson.getJSONObject(randomCharId).getIntValue("rarity");
+                int rarity = ArknightsApplication.getCharacterRarity(randomCharId);
                 String itemName = null;
                 itemType = null;
                 itemId = null;

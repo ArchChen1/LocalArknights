@@ -67,8 +67,11 @@ public class crisis {
     }
 
     @RequestMapping({"/battleFinish"})
-    public JSONObject battleFinish(@RequestHeader("secret") String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
+    public JSONObject battleFinish(@RequestHeader(value = "secret", required = false) String secret, @RequestBody JSONObject JsonBody, HttpServletResponse response, HttpServletRequest request) {
         String clientIp = ArknightsApplication.getIpAddr(request);
+        if (secret == null || secret.isEmpty()) {
+            secret = ArknightsApplication.getSecretByIP(clientIp);
+        }
         ArknightsApplication.LOGGER.info("[/" + clientIp + "] /crisis/battleFinish");
         if (!ArknightsApplication.enableServer) {
             response.setStatus(400);

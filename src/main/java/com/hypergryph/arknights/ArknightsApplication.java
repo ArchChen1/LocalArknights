@@ -269,6 +269,14 @@ public class ArknightsApplication {
         return IP_SECRET_MAP.get(ip);
     }
 
+    public static int getCharacterRarity(String charId) {
+        String rarity = characterJson.getJSONObject(charId).getString("rarity");
+        if (rarity.startsWith("TIER_")) {
+            return Integer.parseInt(rarity.substring(5)) - 1;
+        }
+        return Integer.parseInt(rarity);
+    }
+
     public static void reloadServerConfig() {
         long startTime = System.currentTimeMillis();
         LOGGER.info("载入服务器配置...");

@@ -235,7 +235,7 @@
             "hard": null
         },
         "tr_02": {
-            "next": "tr_02",
+            "next": "main_00-03",
             "star":"main_00-02#f#",
             "sub": null,
             "hard": null
