@@ -277,6 +277,13 @@ public class ArknightsApplication {
         return Integer.parseInt(rarity);
     }
 
+    public static int getPhaseNumber(String phase) {
+        if (phase.startsWith("PHASE_")) {
+            return Integer.parseInt(phase.substring(6));
+        }
+        return Integer.parseInt(phase);
+    }
+
     public static void reloadServerConfig() {
         long startTime = System.currentTimeMillis();
         LOGGER.info("载入服务器配置...");

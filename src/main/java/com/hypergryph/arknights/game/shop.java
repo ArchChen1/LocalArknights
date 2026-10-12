@@ -244,11 +244,38 @@ public class shop {
                     for(int i = 0; i < ArknightsApplication.HighGoodList.getJSONArray("goodList").size(); ++i) {
                         HighGood = ArknightsApplication.HighGoodList.getJSONArray("goodList").getJSONObject(i);
                         if (HighGood.getString("goodId").equals(goodId)) {
-                            UserSyncData.getJSONObject("status").put("hggShard", UserSyncData.getJSONObject("status").getIntValue("hggShard") - HighGood.getIntValue("price") * count);
-                            String reward_id = HighGood.getJSONObject("item").getString("id");
-                            String reward_type = HighGood.getJSONObject("item").getString("type");
-                            int reward_count = HighGood.getJSONObject("item").getIntValue("count") * count;
-                            Admin.GM_GiveItem(UserSyncData, reward_id, reward_type, reward_count, items);
+                            if ("PROGRESS".equals(HighGood.getString("goodType"))) {
+                                String progressGoodId = HighGood.getString("progressGoodId");
+                                JSONArray progressGoods = ArknightsApplication.HighGoodList.getJSONObject("progressGoodList").getJSONArray(progressGoodId);
+                                JSONObject progressInfo = UserSyncData.getJSONObject("shop").getJSONObject("progressInfo");
+                                JSONObject currentProgress = progressInfo.getJSONObject(progressGoodId);
+                                int currentOrder = currentProgress == null ? 0 : currentProgress.getIntValue("order");
+                                int currentCount = currentProgress == null ? 0 : currentProgress.getIntValue("count");
+                                if (count <= 0 || currentOrder + count > progressGoods.size()) {
+                                    JSONObject result = new JSONObject(true);
+                                    result.put("result", 1);
+                                    result.put("error", "商品不可购买");
+                                    return result;
+                                }
+
+                                for (int purchase = 0; purchase < count; purchase++) {
+                                    JSONObject progressGood = progressGoods.getJSONObject(currentOrder + purchase);
+                                    JSONObject reward = progressGood.getJSONObject("item");
+                                    UserSyncData.getJSONObject("status").put("hggShard", UserSyncData.getJSONObject("status").getIntValue("hggShard") - progressGood.getIntValue("price"));
+                                    Admin.GM_GiveItem(UserSyncData, reward.getString("id"), reward.getString("type"), reward.getIntValue("count"), items);
+                                }
+
+                                JSONObject updatedProgress = new JSONObject(true);
+                                updatedProgress.put("count", currentCount + count);
+                                updatedProgress.put("order", currentOrder + count);
+                                progressInfo.put(progressGoodId, updatedProgress);
+                            } else {
+                                UserSyncData.getJSONObject("status").put("hggShard", UserSyncData.getJSONObject("status").getIntValue("hggShard") - HighGood.getIntValue("price") * count);
+                                String reward_id = HighGood.getJSONObject("item").getString("id");
+                                String reward_type = HighGood.getJSONObject("item").getString("type");
+                                int reward_count = HighGood.getJSONObject("item").getIntValue("count") * count;
+                                Admin.GM_GiveItem(UserSyncData, reward_id, reward_type, reward_count, items);
+                            }
                             break;
                         }
                     }

@@ -27,11 +27,12 @@ public class Admin {
         if (reward_type.equals("CHAR")) {
             item = new JSONObject(true);
             String randomCharId = reward_id;
-            int repeatCharId = 0;
+            String repeatCharInstId = null;
 
-            for(int j = 0; j < UserSyncData.getJSONObject("troop").getJSONObject("chars").size(); ++j) {
-                if (UserSyncData.getJSONObject("troop").getJSONObject("chars").getJSONObject(String.valueOf(j + 1)).getString("charId").equals(randomCharId)) {
-                    repeatCharId = j + 1;
+            for (Map.Entry<String, Object> entry : chars.entrySet()) {
+                JSONObject ownedChar = chars.getJSONObject(entry.getKey());
+                if (ownedChar != null && randomCharId.equals(ownedChar.getString("charId"))) {
+                    repeatCharInstId = entry.getKey();
                     break;
                 }
             }
@@ -43,7 +44,7 @@ public class Admin {
             JSONObject charinstId;
             JSONObject get_char;
             String itemType;
-            if (repeatCharId == 0) {
+            if (repeatCharInstId == null) {
                 get_char = new JSONObject(true);
                 char_data = new JSONObject(true);
                 JSONArray skilsArray = ArknightsApplication.characterJson.getJSONObject(randomCharId).getJSONArray("skills");
@@ -56,7 +57,7 @@ public class Admin {
                     new_skils.put("state", 0);
                     new_skils.put("specializeLevel", 0);
                     new_skils.put("completeUpgradeTime", -1);
-                    if (skilsArray.getJSONObject(instId).getJSONObject("unlockCond").getIntValue("phase") == 0) {
+                    if (ArknightsApplication.getPhaseNumber(skilsArray.getJSONObject(instId).getJSONObject("unlockCond").getString("phase")) == 0) {
                         new_skils.put("unlock", 1);
                     } else {
                         new_skils.put("unlock", 0);
@@ -65,7 +66,14 @@ public class Admin {
                     skils.add(new_skils);
                 }
 
-                instId = UserSyncData.getJSONObject("troop").getJSONObject("chars").size() + 1;
+                JSONObject troopData = UserSyncData.getJSONObject("troop");
+                instId = troopData.getIntValue("curCharInstId");
+                if (instId <= 0) {
+                    instId = 1;
+                }
+                while (chars.containsKey(String.valueOf(instId))) {
+                    instId++;
+                }
                 char_data.put("instId", instId);
                 char_data.put("charId", randomCharId);
                 char_data.put("favorPoint", 0);
@@ -107,7 +115,7 @@ public class Admin {
                 }
 
                 UserSyncData.getJSONObject("troop").getJSONObject("chars").put(String.valueOf(instId), char_data);
-                UserSyncData.getJSONObject("troop").put("curCharInstId", instId + 1);
+                troopData.put("curCharInstId", instId + 1);
                 charGroup = new JSONObject(true);
                 charGroup.put("favorPoint", 0);
                 UserSyncData.getJSONObject("troop").getJSONObject("charGroup").put(randomCharId, charGroup);
@@ -153,10 +161,15 @@ public class Admin {
                 items.add(item);
             } else {
                 get_char = new JSONObject(true);
-                get_char.put("charInstId", repeatCharId);
+                Object repeatCharInstIdValue = repeatCharInstId;
+                try {
+                    repeatCharInstIdValue = Integer.valueOf(repeatCharInstId);
+                } catch (NumberFormatException ignored) {
+                }
+                get_char.put("charInstId", repeatCharInstIdValue);
                 get_char.put("charId", randomCharId);
                 get_char.put("isNew", 0);
-                char_data = UserSyncData.getJSONObject("troop").getJSONObject("chars").getJSONObject(String.valueOf(repeatCharId));
+                char_data = chars.getJSONObject(repeatCharInstId);
                 int potentialRank = char_data.getIntValue("potentialRank");
                 int rarity = ArknightsApplication.getCharacterRarity(randomCharId);
                 String itemName = null;
@@ -229,8 +242,8 @@ public class Admin {
                 UserSyncData.getJSONObject("inventory").put("p_" + randomCharId, UserSyncData.getJSONObject("inventory").getIntValue("p_" + randomCharId) + 1);
                 consumable = get_char;
                 charinstId = new JSONObject(true);
-                charinstId.put(String.valueOf(repeatCharId), UserSyncData.getJSONObject("troop").getJSONObject("chars").getJSONObject(String.valueOf(repeatCharId)));
-                chars.put(String.valueOf(repeatCharId), UserSyncData.getJSONObject("troop").getJSONObject("chars").getJSONObject(String.valueOf(repeatCharId)));
+                charinstId.put(repeatCharInstId, char_data);
+                chars.put(repeatCharInstId, char_data);
                 troop.put("chars", charinstId);
                 item.put("type", reward_type);
                 item.put("id", randomCharId);
@@ -240,11 +253,11 @@ public class Admin {
         }
 
         if (reward_type.equals("HGG_SHD")) {
-            UserSyncData.getJSONObject("status").put("practiceTicket", UserSyncData.getJSONObject("status").getIntValue("hggShard") + reward_count);
+            UserSyncData.getJSONObject("status").put("hggShard", UserSyncData.getJSONObject("status").getIntValue("hggShard") + reward_count);
         }
 
         if (reward_type.equals("LGG_SHD")) {
-            UserSyncData.getJSONObject("status").put("practiceTicket", UserSyncData.getJSONObject("status").getIntValue("lggShard") + reward_count);
+            UserSyncData.getJSONObject("status").put("lggShard", UserSyncData.getJSONObject("status").getIntValue("lggShard") + reward_count);
         }
 
         if (reward_type.equals("MATERIAL")) {
@@ -264,13 +277,15 @@ public class Admin {
         }
 
         if (reward_type.equals("AP_ITEM")) {
+            int apRestore;
             if (reward_id.contains("60")) {
-                UserSyncData.getJSONObject("status").put("ap", UserSyncData.getJSONObject("status").getIntValue("ap") + 60);
+                apRestore = 60;
             } else if (reward_id.contains("200")) {
-                UserSyncData.getJSONObject("status").put("ap", UserSyncData.getJSONObject("status").getIntValue("ap") + 200);
+                apRestore = 200;
             } else {
-                UserSyncData.getJSONObject("status").put("ap", UserSyncData.getJSONObject("status").getIntValue("ap") + 100);
+                apRestore = 100;
             }
+            UserSyncData.getJSONObject("status").put("ap", UserSyncData.getJSONObject("status").getIntValue("ap") + apRestore * reward_count);
         }
 
         if (reward_type.equals("TKT_TRY")) {

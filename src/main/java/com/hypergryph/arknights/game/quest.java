@@ -953,13 +953,23 @@ public class quest {
         }
 
         private int resolveOccPercent(String occPercent) {
+            if (occPercent == null || occPercent.isEmpty()) {
+                return 0;
+            }
+
             switch (occPercent) {
                 case "ALWAYS":
                     return 0;
+                case "ALMOST":
+                    return 1;
                 case "SOMETIMES":
                     return 4;
                 default:
-                    return Integer.parseInt(occPercent);
+                    try {
+                        return Integer.parseInt(occPercent);
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
             }
         }
 

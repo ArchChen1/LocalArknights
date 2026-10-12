@@ -47,7 +47,10 @@ public class CommandHandler implements ICommandManager{
 
     public int executeCommand(ICommandSender sender,String rawCommand) {
             rawCommand = rawCommand.trim();
-            String[] astring = rawCommand.split(" ");
+            if (rawCommand.startsWith("/")) {
+                rawCommand = rawCommand.substring(1);
+            }
+            String[] astring = rawCommand.split("\\s+");
             String s = astring[0];
             ICommand icommand = this.commandMap.get(s);
             if(icommand == null) {

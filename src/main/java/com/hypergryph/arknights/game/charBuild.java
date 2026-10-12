@@ -640,7 +640,7 @@ public class charBuild {
                     }
 
                     for(i = 0; i < charskills.size(); ++i) {
-                        if (charskills.getJSONObject(i).getString("skillId").equals(skills.getJSONObject(i).getString("skillId")) && skills.getJSONObject(i).getJSONObject("unlockCond").getIntValue("phase") == 1) {
+                        if (charskills.getJSONObject(i).getString("skillId").equals(skills.getJSONObject(i).getString("skillId")) && ArknightsApplication.getPhaseNumber(skills.getJSONObject(i).getJSONObject("unlockCond").getString("phase")) == 1) {
                             charskills.getJSONObject(i).put("unlock", 1);
                         }
                     }
@@ -658,7 +658,7 @@ public class charBuild {
                     }
 
                     for(i = 0; i < charskills.size(); ++i) {
-                        if (charskills.getJSONObject(i).getString("skillId").equals(skills.getJSONObject(i).getString("skillId")) && skills.getJSONObject(i).getJSONObject("unlockCond").getIntValue("phase") == 2) {
+                        if (charskills.getJSONObject(i).getString("skillId").equals(skills.getJSONObject(i).getString("skillId")) && ArknightsApplication.getPhaseNumber(skills.getJSONObject(i).getJSONObject("unlockCond").getString("phase")) == 2) {
                             charskills.getJSONObject(i).put("unlock", 1);
                         }
                     }

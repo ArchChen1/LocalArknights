@@ -12,11 +12,11 @@
 		"set_server_time": "-1"
 	},
 	"database":{
-		"host":"Host",
+		"host":"192.168.2.114",
 		"port":3306,
 		"dbname":"arknights",
 		"user":"ark",
-		"password":"passwd",
+		"password":"arknights123",
 		"extra":"useSSL=false&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&allowMultiQueries=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai"
 	},
 	"roguelike":{

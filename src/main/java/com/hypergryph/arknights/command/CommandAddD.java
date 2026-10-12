@@ -19,7 +19,7 @@ public class CommandAddD extends CommandBase {
     }
 
     public String getCommandUsage(ICommandSender sender) {
-        return "[number] [UID]";
+        return "[UID] [number]";
     }
 
     public String getCommandDescription() {
@@ -27,7 +27,7 @@ public class CommandAddD extends CommandBase {
     }
 
     public String getCommandExample() {
-        return "/addD [增加源石数] [UID]";
+        return "/addD [UID] [增加源石数]";
     }
 
     public String getCommandExampleUsage() {
@@ -43,23 +43,21 @@ public class CommandAddD extends CommandBase {
             }
 
             // 检查是否有足够的参数
-            if (args.length <= startIndex) {
+            if (args.length != startIndex + 2) {
                 LOGGER.error("参数不足");
-                LOGGER.info("用法: /addD <数量> <UID>");
+                LOGGER.info("用法: /addD <UID> <数量>");
                 return;
             }
 
-            // 解析数量
-            int amount = Integer.parseInt(args[startIndex]);
+            long uid = Long.parseLong(args[startIndex]);
+            int amount = Integer.parseInt(args[startIndex + 1]);
+            if (uid <= 0) {
+                LOGGER.error("UID 必须大于 0");
+                return;
+            }
             if (amount <= 0) {
                 LOGGER.error("数量必须大于0");
                 return;
-            }
-
-            // 解析 UID（如果有）
-            long uid = 0;
-            if (args.length > startIndex + 1) {
-                uid = Long.parseLong(args[startIndex + 1]);
             }
 
             // 执行添加
@@ -71,8 +69,8 @@ public class CommandAddD extends CommandBase {
             }
 
         } catch (NumberFormatException e) {
-            LOGGER.error("参数格式错误: 数量必须是数字");
-            LOGGER.info("用法: /addD <数量> <UID>");
+            LOGGER.error("参数格式错误: UID 和数量必须是数字");
+            LOGGER.info("用法: /addD <UID> <数量>");
         } catch (Exception e) {
             LOGGER.error("执行 addD 命令失败", e);
         }
